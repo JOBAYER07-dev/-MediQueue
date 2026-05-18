@@ -22,6 +22,9 @@ const TutorDetailsContent = () => {
   const [booking, setBooking] = useState(false);
   const [token] = useState(generateToken());
 
+  // 🌟 নতুন যোগ করা স্টেট (Phone Number এর জন্য)
+  const [phone, setPhone] = useState('');
+
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/tutors/${id}`)
       .then(res => res.json())
@@ -33,6 +36,9 @@ const TutorDetailsContent = () => {
   }, [id]);
 
   const handleBooking = async () => {
+    // 🌟 Phone নাম্বার না দিলে বুকিং হবে না
+    if (!phone) return toast.error('Phone number is required!');
+
     if (tutor.totalSlot <= 0) return toast.error('No available slots left!');
     if (new Date() < new Date(tutor.sessionStartDate))
       return toast.error('Booking is not available yet for this tutor!');
@@ -50,6 +56,7 @@ const TutorDetailsContent = () => {
           tutorName: tutor.name,
           studentName: user.displayName,
           studentEmail: user.email,
+          phone: phone, // 🌟 ডাটাবেসে ফোন নাম্বার পাঠানো হচ্ছে
           status: 'pending',
           sessionToken: token,
         }),
@@ -58,6 +65,7 @@ const TutorDetailsContent = () => {
       if (data.insertedId) {
         toast.success('Session booked successfully! 🎉');
         setTutor(prev => ({ ...prev, totalSlot: prev.totalSlot - 1 }));
+        setPhone(''); // বুকিংয়ের পর ফোন নাম্বার ফিল্ড ক্লিয়ার করে দেওয়া
       }
     } catch {
       toast.error('Booking failed!');
@@ -172,6 +180,7 @@ const TutorDetailsContent = () => {
               📅 Book a Session
             </div>
 
+            {/* Auto Filled Fields */}
             {[
               ['Student Name', user?.displayName],
               ['Email', user?.email],
@@ -188,6 +197,21 @@ const TutorDetailsContent = () => {
                 />
               </div>
             ))}
+
+            {/* 🌟 Phone Number Field (New) */}
+            <div className="mb-4">
+              <label className="block text-[0.72rem] font-semibold text-[#9aa3be] uppercase tracking-[0.8px] mb-2">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                required
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                placeholder="Enter your phone number"
+                className="w-full px-4 py-3 bg-[#0f1424] border border-white/[0.08] rounded-xl text-[#e8ecf4] text-[0.85rem] outline-none focus:border-[#d4a84b]/50 transition-all duration-200"
+              />
+            </div>
 
             <div className="bg-[rgba(62,207,142,0.07)] border border-[rgba(62,207,142,0.18)] rounded-xl px-4 py-3 flex justify-between items-center mb-5">
               <span className="text-[0.65rem] text-[#6b7694]">
