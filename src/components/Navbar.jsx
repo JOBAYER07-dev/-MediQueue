@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FiMenu, FiX, FiMoon, FiSun, FiLogOut } from 'react-icons/fi';
+import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -11,26 +13,31 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dark, setDark] = useState(true);
 
-  //  Replace with your real auth context
-  const user = {
-    displayName: 'Jobayer Hossain',
-    photoURL: null,
-    email: 'jobayer@gmail.com',
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully!');
+      router.push('/');
+    } catch {
+      toast.error('Logout failed!');
+    }
   };
-  const logout = () => router.push('/login');
 
   const publicLinks = [
     { label: 'Home', href: '/' },
     { label: 'Tutors', href: '/tutors' },
   ];
-  const privateLinks = user
-    ? [
-        { label: 'Add Tutor', href: '/add-tutor' },
-        { label: 'My Tutors', href: '/my-tutors' },
-        { label: 'My Sessions', href: '/my-bookings' },
-      ]
-    : [];
-  const allLinks = [...publicLinks, ...privateLinks];
+
+  const privateLinks = [
+    { label: 'Add Tutor', href: '/add-tutor' },
+    { label: 'My Tutors', href: '/my-tutors' },
+    { label: 'My Sessions', href: '/my-bookings' },
+  ];
+
+  // private links শুধু logged in user দেখবে
+  const allLinks = user ? [...publicLinks, ...privateLinks] : publicLinks;
 
   const initials = user?.displayName
     ? user.displayName.slice(0, 2).toUpperCase()
@@ -39,7 +46,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-[68px] flex items-center justify-between px-4 md:px-10 bg-[rgba(10,14,26,0.88)] backdrop-blur-xl border-b border-white/[0.07]">
-      {/*  LOGO  */}
+      {/* LOGO */}
       <Link
         href="/"
         className="flex items-center gap-2.5 no-underline shrink-0"
@@ -52,7 +59,7 @@ const Navbar = () => {
         </span>
       </Link>
 
-      {/*  DESKTOP LINKS  */}
+      {/* DESKTOP LINKS */}
       <div className="hidden md:flex items-center gap-1">
         {allLinks.map(link => {
           const isActive = pathname === link.href;
@@ -73,7 +80,7 @@ const Navbar = () => {
         })}
       </div>
 
-      {/*  RIGHT SIDE  */}
+      {/* RIGHT SIDE */}
       <div className="flex items-center gap-2">
         {/* Theme toggle */}
         <button
@@ -84,15 +91,17 @@ const Navbar = () => {
         </button>
 
         {user ? (
-          /*  LOGGED IN  */
+          /* LOGGED IN */
           <div
-            onClick={logout}
+            onClick={handleLogout}
             className="flex items-center gap-2 pl-1 pr-3 py-1 border border-white/[0.12] rounded-full cursor-pointer hover:border-[#d4a84b]/30 transition-all duration-200 group"
           >
             {user.photoURL ? (
               <Image
                 src={user.photoURL}
                 alt="avatar"
+                width={28}
+                height={28}
                 className="w-7 h-7 rounded-full object-cover"
               />
             ) : (
@@ -109,7 +118,7 @@ const Navbar = () => {
             />
           </div>
         ) : (
-          /*  GUEST  */
+          /* GUEST */
           <div className="hidden md:flex items-center gap-2">
             <Link
               href="/login"
@@ -126,7 +135,7 @@ const Navbar = () => {
           </div>
         )}
 
-        {/*  MOBILE HAMBURGER  */}
+        {/* MOBILE HAMBURGER */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden w-9 h-9 rounded-[9px] border border-white/[0.12] bg-transparent flex items-center justify-center text-[#9aa3be]"
@@ -135,7 +144,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/*  MOBILE DROPDOWN  */}
+      {/* MOBILE DROPDOWN */}
       {menuOpen && (
         <div className="absolute top-[68px] left-0 right-0 bg-[#0f1424] border-b border-white/[0.07] flex flex-col px-4 py-4 gap-1 md:hidden">
           {allLinks.map(link => {
@@ -174,6 +183,19 @@ const Navbar = () => {
                 Register
               </Link>
             </div>
+          )}
+
+          {/* Mobile logout */}
+          {user && (
+            <button
+              onClick={() => {
+                handleLogout();
+                setMenuOpen(false);
+              }}
+              className="mt-2 pt-3 border-t border-white/[0.07] text-left px-4 py-2.5 text-[0.85rem] text-[#f87171] flex items-center gap-2"
+            >
+              <FiLogOut size={14} /> Logout
+            </button>
           )}
         </div>
       )}
