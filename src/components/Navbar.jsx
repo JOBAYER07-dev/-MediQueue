@@ -5,15 +5,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FiMenu, FiX, FiMoon, FiSun, FiLogOut } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dark, setDark] = useState(true);
-
   const { user, logout } = useAuth();
+  const { dark, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -36,9 +36,7 @@ const Navbar = () => {
     { label: 'My Sessions', href: '/my-bookings' },
   ];
 
-  // private links শুধু logged in user দেখবে
   const allLinks = user ? [...publicLinks, ...privateLinks] : publicLinks;
-
   const initials = user?.displayName
     ? user.displayName.slice(0, 2).toUpperCase()
     : 'MQ';
@@ -82,16 +80,15 @@ const Navbar = () => {
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-2">
-        {/* Theme toggle */}
+        {/* ── THEME TOGGLE ── */}
         <button
-          onClick={() => setDark(!dark)}
+          onClick={toggleTheme}
           className="w-9 h-9 rounded-[9px] border border-white/[0.12] bg-transparent flex items-center justify-center text-[#9aa3be] hover:text-[#d4a84b] hover:border-[#d4a84b]/30 transition-all duration-200"
         >
           {dark ? <FiSun size={15} /> : <FiMoon size={15} />}
         </button>
 
         {user ? (
-          /* LOGGED IN */
           <div
             onClick={handleLogout}
             className="flex items-center gap-2 pl-1 pr-3 py-1 border border-white/[0.12] rounded-full cursor-pointer hover:border-[#d4a84b]/30 transition-all duration-200 group"
@@ -118,7 +115,6 @@ const Navbar = () => {
             />
           </div>
         ) : (
-          /* GUEST */
           <div className="hidden md:flex items-center gap-2">
             <Link
               href="/login"
@@ -155,11 +151,7 @@ const Navbar = () => {
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
                 className={`px-4 py-2.5 rounded-lg text-[0.85rem] font-medium no-underline transition-all duration-200
-                  ${
-                    isActive
-                      ? 'bg-[rgba(212,168,75,0.12)] text-[#d4a84b]'
-                      : 'text-[#9aa3be] hover:text-[#d4a84b]'
-                  }`}
+                  ${isActive ? 'bg-[rgba(212,168,75,0.12)] text-[#d4a84b]' : 'text-[#9aa3be] hover:text-[#d4a84b]'}`}
               >
                 {link.label}
               </Link>
@@ -185,7 +177,6 @@ const Navbar = () => {
             </div>
           )}
 
-          {/* Mobile logout */}
           {user && (
             <button
               onClick={() => {

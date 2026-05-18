@@ -16,15 +16,14 @@ const MyBookingsContent = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancelId, setCancelId] = useState(null);
 
   const fetchBookings = async () => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/bookings/${user.email}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         },
       );
       const data = await res.json();
@@ -40,24 +39,24 @@ const MyBookingsContent = () => {
     if (user?.email) fetchBookings();
   }, [user]);
 
-  const handleCancel = async id => {
-    if (!confirm('Are you sure you want to cancel this booking?')) return;
+  const handleCancel = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/bookings/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/bookings/${cancelId}`,
         {
           method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         },
       );
       const data = await res.json();
       if (data.modifiedCount > 0) {
         toast.success('Booking cancelled!');
         setBookings(prev =>
-          prev.map(b => (b._id === id ? { ...b, status: 'cancelled' } : b)),
+          prev.map(b =>
+            b._id === cancelId ? { ...b, status: 'cancelled' } : b,
+          ),
         );
+        setCancelId(null);
       }
     } catch {
       toast.error('Cancel failed!');
@@ -138,7 +137,7 @@ const MyBookingsContent = () => {
                     </td>
                     <td className="px-5 py-4">
                       <button
-                        onClick={() => handleCancel(b._id)}
+                        onClick={() => setCancelId(b._id)}
                         disabled={b.status === 'cancelled'}
                         className="px-3 py-1.5 rounded-lg bg-[rgba(248,113,113,0.1)] border border-[rgba(248,113,113,0.2)] text-[#f87171] text-[0.75rem] font-semibold hover:opacity-80 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                       >
@@ -152,6 +151,40 @@ const MyBookingsContent = () => {
           </div>
         )}
       </div>
+
+      {/* ── CANCEL CONFIRMATION MODAL ── */}
+      {cancelId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#131829] border border-white/[0.07] rounded-2xl p-8 w-full max-w-sm text-center relative">
+            {/* top shimmer red */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#f87171] to-transparent rounded-t-2xl" />
+
+            <div className="text-4xl mb-4">⚠️</div>
+            <h3 className="font-serif text-[1.2rem] font-bold text-[#e8ecf4] mb-2">
+              Cancel Booking?
+            </h3>
+            <p className="text-[0.82rem] text-[#9aa3be] mb-6 leading-relaxed">
+              Are you sure you want to cancel this session? This action cannot
+              be undone.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancel}
+                className="flex-1 py-3 rounded-xl bg-[rgba(248,113,113,0.15)] border border-[rgba(248,113,113,0.3)] text-[#f87171] text-[0.88rem] font-bold hover:opacity-80 transition-all"
+              >
+                Yes, Cancel
+              </button>
+              <button
+                onClick={() => setCancelId(null)}
+                className="flex-1 py-3 rounded-xl border border-white/[0.12] text-[#9aa3be] text-[0.88rem] font-medium hover:border-[#d4a84b]/30 hover:text-[#d4a84b] transition-all"
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

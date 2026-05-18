@@ -3,19 +3,30 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth } from '@/context/AuthContext';
 
+const subjects = [
+  'Mathematics',
+  'Physics',
+  'Chemistry',
+  'Biology',
+  'English',
+  'Computer Science',
+  'Economics',
+  'Fine Arts',
+];
+const modes = ['Online', 'Offline', 'Both'];
+
 const MyTutorsContent = () => {
   const { user } = useAuth();
   const [tutors, setTutors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editTutor, setEditTutor] = useState(null);
 
   const fetchMyTutors = async () => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/my-tutors/${user.email}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         },
       );
       const data = await res.json();
@@ -38,9 +49,7 @@ const MyTutorsContent = () => {
         `${process.env.NEXT_PUBLIC_API_URL}/tutors/${id}`,
         {
           method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         },
       );
       const data = await res.json();
@@ -52,6 +61,52 @@ const MyTutorsContent = () => {
       toast.error('Delete failed!');
     }
   };
+
+  const handleUpdate = async e => {
+    e.preventDefault();
+    const form = e.target;
+    const updated = {
+      name: form.name.value,
+      photo: form.photo.value,
+      subject: form.subject.value,
+      availableDays: form.availableDays.value,
+      timeSlot: form.timeSlot.value,
+      hourlyFee: Number(form.hourlyFee.value),
+      totalSlot: Number(form.totalSlot.value),
+      institution: form.institution.value,
+      experience: form.experience.value,
+      location: form.location.value,
+      teachingMode: form.teachingMode.value,
+    };
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/tutors/${editTutor._id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify(updated),
+        },
+      );
+      const data = await res.json();
+      if (data.modifiedCount > 0) {
+        toast.success('Tutor updated successfully!');
+        setTutors(prev =>
+          prev.map(t => (t._id === editTutor._id ? { ...t, ...updated } : t)),
+        );
+        setEditTutor(null);
+      }
+    } catch {
+      toast.error('Update failed!');
+    }
+  };
+
+  const inputClass =
+    'w-full px-3 py-2.5 bg-[#0a0e1a] border border-white/[0.08] rounded-xl text-[#e8ecf4] text-[0.85rem] outline-none focus:border-[#d4a84b]/50 transition-all duration-200';
+  const labelClass =
+    'block text-[0.68rem] font-semibold text-[#9aa3be] uppercase tracking-[0.8px] mb-1.5';
 
   if (loading)
     return (
@@ -78,8 +133,8 @@ const MyTutorsContent = () => {
             </p>
           </div>
         ) : (
-          <div className="bg-[#131829] border border-white/[0.07] rounded-2xl overflow-hidden">
-            <table className="w-full border-collapse">
+          <div className="bg-[#131829] border border-white/[0.07] rounded-2xl overflow-hidden overflow-x-auto">
+            <table className="w-full border-collapse min-w-[650px]">
               <thead>
                 <tr className="bg-[rgba(212,168,75,0.06)] border-b border-white/[0.07]">
                   {[
@@ -130,7 +185,10 @@ const MyTutorsContent = () => {
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex gap-2">
-                        <button className="px-3 py-1.5 rounded-lg bg-[rgba(212,168,75,0.1)] border border-[rgba(212,168,75,0.2)] text-[#d4a84b] text-[0.75rem] font-semibold hover:opacity-80 transition-all">
+                        <button
+                          onClick={() => setEditTutor(t)}
+                          className="px-3 py-1.5 rounded-lg bg-[rgba(212,168,75,0.1)] border border-[rgba(212,168,75,0.2)] text-[#d4a84b] text-[0.75rem] font-semibold hover:opacity-80 transition-all"
+                        >
                           ✏ Edit
                         </button>
                         <button
@@ -148,6 +206,140 @@ const MyTutorsContent = () => {
           </div>
         )}
       </div>
+
+      {/* ── UPDATE MODAL ── */}
+      {editTutor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#131829] border border-white/[0.07] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#d4a84b] to-transparent rounded-t-2xl" />
+
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-serif text-[1.3rem] font-bold text-[#e8ecf4]">
+                  Edit <span className="text-[#d4a84b]">Tutor</span>
+                </h2>
+                <button
+                  onClick={() => setEditTutor(null)}
+                  className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.08] text-[#9aa3be] hover:text-[#f87171] flex items-center justify-center text-lg transition-all"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdate}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    {
+                      label: 'Tutor Name',
+                      name: 'name',
+                      default: editTutor.name,
+                    },
+                    {
+                      label: 'Photo URL',
+                      name: 'photo',
+                      default: editTutor.photo,
+                    },
+                    {
+                      label: 'Available Days',
+                      name: 'availableDays',
+                      default: editTutor.availableDays,
+                    },
+                    {
+                      label: 'Time Slot',
+                      name: 'timeSlot',
+                      default: editTutor.timeSlot,
+                    },
+                    {
+                      label: 'Hourly Fee (৳)',
+                      name: 'hourlyFee',
+                      type: 'number',
+                      default: editTutor.hourlyFee,
+                    },
+                    {
+                      label: 'Total Slots',
+                      name: 'totalSlot',
+                      type: 'number',
+                      default: editTutor.totalSlot,
+                    },
+                    {
+                      label: 'Institution',
+                      name: 'institution',
+                      default: editTutor.institution,
+                    },
+                    {
+                      label: 'Experience',
+                      name: 'experience',
+                      default: editTutor.experience,
+                    },
+                    {
+                      label: 'Location',
+                      name: 'location',
+                      default: editTutor.location,
+                    },
+                  ].map(f => (
+                    <div key={f.name}>
+                      <label className={labelClass}>{f.label}</label>
+                      <input
+                        name={f.name}
+                        type={f.type || 'text'}
+                        defaultValue={f.default}
+                        required
+                        className={inputClass}
+                      />
+                    </div>
+                  ))}
+
+                  <div>
+                    <label className={labelClass}>Subject</label>
+                    <select
+                      name="subject"
+                      defaultValue={editTutor.subject}
+                      className={inputClass + ' cursor-pointer'}
+                    >
+                      {subjects.map(s => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={labelClass}>Teaching Mode</label>
+                    <select
+                      name="teachingMode"
+                      defaultValue={editTutor.teachingMode}
+                      className={inputClass + ' cursor-pointer'}
+                    >
+                      {modes.map(m => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-br from-[#d4a84b] to-[#a06a10] text-[#0a0e1a] text-[0.88rem] font-bold hover:opacity-90 transition-all"
+                  >
+                    Save Changes ✓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditTutor(null)}
+                    className="px-6 py-3 rounded-xl border border-white/[0.12] text-[#9aa3be] text-[0.88rem] font-medium hover:border-[#d4a84b]/30 hover:text-[#d4a84b] transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
