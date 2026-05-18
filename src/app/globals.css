@@ -1,4 +1,7 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "@heroui/styles";
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -32,4 +35,46 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── LIGHT THEME MAGICAL OVERRIDES ── */
+html.light body {
+  background-color: #f4f6fb !important;
+  color: #0a0e1a !important;
+}
+
+html.light [class*="bg-[#0a0e1a]"],
+html.light [class*="bg-[#0f1424]"] {
+  background-color: #f4f6fb !important;
+}
+
+html.light [class*="bg-[#131829]"] {
+  background-color: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light [class*="bg-[rgba(10,14,26,0.88)]"] {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.light [class*="text-[#e8ecf4]"] {
+  color: #0a0e1a !important;
+}
+
+html.light [class*="text-[#9aa3be]"] {
+  color: #4a5568 !important;
+}
+
+html.light [class*="text-[#6b7694]"] {
+  color: #718096 !important;
+}
+
+html.light [class*="border-white"] {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ── BANNER GRADIENT OVERRIDE ── */
+html.light [class*="from-[#0a0e1a]"] {
+  background-image: linear-gradient(to bottom right, #f4f6fb, #eef1f8) !important;
 }

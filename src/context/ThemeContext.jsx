@@ -10,11 +10,9 @@ export const ThemeProvider = ({ children }) => {
     const saved = localStorage.getItem('theme');
     if (saved === 'light') {
       setDark(false);
-      document.body.style.background = '#f4f6fb';
-      document.body.style.color = '#0a0e1a';
+      document.documentElement.classList.add('light');
     } else {
-      document.body.style.background = '#0a0e1a';
-      document.body.style.color = '#e8ecf4';
+      document.documentElement.classList.remove('light');
     }
   }, []);
 
@@ -22,12 +20,10 @@ export const ThemeProvider = ({ children }) => {
     setDark(prev => {
       const next = !prev;
       if (next) {
-        document.body.style.background = '#0a0e1a';
-        document.body.style.color = '#e8ecf4';
+        document.documentElement.classList.remove('light');
         localStorage.setItem('theme', 'dark');
       } else {
-        document.body.style.background = '#f4f6fb';
-        document.body.style.color = '#0a0e1a';
+        document.documentElement.classList.add('light');
         localStorage.setItem('theme', 'light');
       }
       return next;
