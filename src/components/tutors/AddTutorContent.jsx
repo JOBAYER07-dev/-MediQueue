@@ -54,7 +54,7 @@ const AddTutorContent = () => {
       });
       const data = await res.json();
       if (data.insertedId) {
-        toast.success('Tutor added successfully! 🎉');
+        toast.success('Tutor added successfully!');
         form.reset();
         router.push('/my-tutors');
       }
@@ -66,9 +66,9 @@ const AddTutorContent = () => {
   };
 
   const inputClass =
-    'w-full px-4 py-3 bg-[#0f1424] border border-white/[0.08] rounded-xl text-[#e8ecf4] text-[0.88rem] outline-none focus:border-[#d4a84b]/50 transition-all duration-200 placeholder:text-[#6b7694]';
+    'w-full px-4 py-3 bg-slate-50 dark:bg-[#0f1424] border border-slate-200 dark:border-white/[0.08] rounded-xl text-slate-900 dark:text-[#e8ecf4] text-[0.88rem] outline-none focus:border-[#d4a84b]/50 transition-all duration-200 placeholder:text-slate-400 dark:placeholder:text-[#6b7694]';
   const labelClass =
-    'block text-[0.72rem] font-semibold text-[#9aa3be] uppercase tracking-[0.8px] mb-2';
+    'block text-[0.72rem] font-semibold text-slate-600 dark:text-[#9aa3be] uppercase tracking-[0.8px] mb-2';
 
   const sections = [
     {
@@ -139,23 +139,23 @@ const AddTutorContent = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0e1a] px-4 sm:px-8 lg:px-16 py-12 pt-[88px]">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0e1a] px-4 sm:px-8 lg:px-16 py-12 pt-[88px] transition-colors duration-300">
       <div className="max-w-3xl mx-auto">
         <p className="text-[0.68rem] font-semibold uppercase tracking-[3px] text-[#d4a84b] mb-2">
           ✦ Tutor Management
         </p>
-        <h1 className="font-serif text-[2rem] font-bold text-[#e8ecf4] mb-1">
+        <h1 className="font-serif text-[2rem] font-bold text-slate-900 dark:text-[#e8ecf4] mb-1">
           Add a New <span className="text-[#d4a84b]">Tutor</span>
         </h1>
-        <p className="text-[0.85rem] text-[#6b7694] mb-8">
+        <p className="text-[0.85rem] text-slate-500 dark:text-[#6b7694] mb-8">
           Fill in the details below to create a new tutor listing.
         </p>
 
         <form onSubmit={handleSubmit}>
-          <div className="bg-[#131829] border border-white/[0.07] rounded-2xl p-8 flex flex-col gap-8">
+          <div className="bg-white dark:bg-[#131829] border border-slate-200 dark:border-white/[0.07] rounded-2xl p-8 flex flex-col gap-8 shadow-sm">
             {sections.map(sec => (
               <div key={sec.title}>
-                <div className="text-[0.68rem] font-semibold uppercase tracking-[2px] text-[#d4a84b] pb-3 mb-5 border-b border-white/[0.07]">
+                <div className="text-[0.68rem] font-semibold uppercase tracking-[2px] text-[#d4a84b] pb-3 mb-5 border-b border-slate-200 dark:border-white/[0.07]">
                   {sec.title}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -194,7 +194,7 @@ const AddTutorContent = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-br from-[#d4a84b] to-[#a06a10] text-[#0a0e1a] text-[0.9rem] font-bold shadow-[0_6px_20px_rgba(212,168,75,.3)] hover:opacity-90 transition-all duration-200 disabled:opacity-60"
+              className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-br from-[#d4a84b] to-[#a06a10] text-white dark:text-[#0a0e1a] text-[0.9rem] font-bold shadow-[0_6px_20px_rgba(212,168,75,.3)] hover:opacity-90 transition-all duration-200 disabled:opacity-60"
             >
               {loading ? 'Submitting...' : '✓ Submit Tutor'}
             </button>

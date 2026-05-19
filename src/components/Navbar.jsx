@@ -80,7 +80,7 @@ const Navbar = () => {
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-2">
-        {/* ── THEME TOGGLE ── */}
+        {/*  THEME TOGGLE  */}
         <button
           onClick={toggleTheme}
           className="w-9 h-9 rounded-[9px] border border-slate-300 dark:border-white/[0.12] bg-transparent flex items-center justify-center text-slate-600 dark:text-[#9aa3be] hover:text-[#d4a84b] hover:border-[#d4a84b]/30 transition-all duration-200"

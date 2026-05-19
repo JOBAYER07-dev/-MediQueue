@@ -21,7 +21,7 @@ const LoginPage = () => {
 
     try {
       await login(email, password);
-      toast.success('Login successful! 🎉');
+      toast.success('Login successful!');
       router.push('/');
     } catch (err) {
       toast.error(err.message || 'Login failed!');
@@ -34,7 +34,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       await googleLogin();
-      toast.success('Login successful! 🎉');
+      toast.success('Login successful!');
       router.push('/');
     } catch (err) {
       toast.error(err.message || 'Google login failed!');

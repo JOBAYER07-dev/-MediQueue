@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body
-        suppressHydrationWarning /* 🌟 এই লাইনটি যোগ করা হয়েছে */
+        suppressHydrationWarning 
         className="min-h-full flex flex-col"
         style={{ transition: 'background 0.3s ease, color 0.3s ease' }}
       >

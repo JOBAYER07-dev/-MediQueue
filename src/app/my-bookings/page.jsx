@@ -1,5 +1,5 @@
 import PrivateRoute from '@/components/shared/PrivateRoute';
-import MyBookingsContent from '@/components/tutors/MyBookingsContent'; // অথবা আপনার সঠিক পাথ
+import MyBookingsContent from '@/components/tutors/MyBookingsContent';
 
 export const metadata = {
   title: 'My Bookings | MediQueue',
