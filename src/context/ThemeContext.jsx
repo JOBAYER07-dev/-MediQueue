@@ -4,15 +4,16 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext(null);
 
 export const ThemeProvider = ({ children }) => {
-  const [dark, setDark] = useState(true);
+  const [dark, setDark] = useState(true); // ডিফল্ট ডার্ক মোড
 
   useEffect(() => {
     const saved = localStorage.getItem('theme');
     if (saved === 'light') {
       setDark(false);
-      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
     } else {
-      document.documentElement.classList.remove('light');
+      setDark(true);
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
@@ -20,10 +21,10 @@ export const ThemeProvider = ({ children }) => {
     setDark(prev => {
       const next = !prev;
       if (next) {
-        document.documentElement.classList.remove('light');
+        document.documentElement.classList.add('dark');
         localStorage.setItem('theme', 'dark');
       } else {
-        document.documentElement.classList.add('light');
+        document.documentElement.classList.remove('dark');
         localStorage.setItem('theme', 'light');
       }
       return next;
